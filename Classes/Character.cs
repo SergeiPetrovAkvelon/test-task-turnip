@@ -23,7 +23,12 @@ namespace Turnip.Classes
         public string ToGrab(BaseObject character)
         {
             this.GrabedCharacter = character;
-            return this.Name + " for " +this.GrabedCharacter;
+            return ToGrab();
+        }
+
+        public string ToGrab()
+        {
+            return this.Name + " for " + this.GrabedCharacter;
         }
 
         public void ToPull(Plant plant)

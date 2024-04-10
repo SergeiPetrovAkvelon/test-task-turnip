@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Turnip.Classes;
 
 namespace Turnip
 {
@@ -15,7 +16,7 @@ namespace Turnip
 
     class Fairytale
     {
-        private Character[] availableCharacters = new Character[]
+        private Character[] availableCharacters =
         {
             new Human("Grandfather"),
             new Human("Grandmother"),
@@ -29,7 +30,7 @@ namespace Turnip
             new Human("Grandson")
         };
 
-        private Plant[] availablePlants = new Plant[]
+        private Plant[] availablePlants =
         {
             new Vegetable("Carrot"),
             new Vegetable("Potato"),
@@ -46,11 +47,13 @@ namespace Turnip
 
         private Character[] characters = new Character[6];
         private Plant? plant;
+        private Human mainCharacter;
+        private int activeCharacters=0;
 
         public Fairytale()
         { }
 
-        private static void DrawMenu(BaseObject[] items, int row, int col, int index)
+        private static void DrawMenu<T>(T[] items, int row, int col, int index)
         {
             Console.SetCursorPosition(col, row);
             for (int i = 0; i < items.Length; i++)
@@ -67,7 +70,7 @@ namespace Turnip
         }
 
 
-        private BaseObject[] ChoosePoints(string title, Character[] menuItems)
+        private T[] ChooseCharacters<T>(string title, T[] menuItems)
         {
             Console.WriteLine(title);
             Console.WriteLine();
@@ -76,7 +79,7 @@ namespace Turnip
             int col = Console.CursorLeft;
             int index = 0;
             int i = 0;
-            Character[] selectedCharacters = new Character[6];
+            T[] selectedCharacters = new T[5];
             while (true)
             {
                 DrawMenu(menuItems, row, col, index);
@@ -98,13 +101,13 @@ namespace Turnip
                         break;
 
                 }
-                if (i == 6)
+                if (i == 5)
                 {
                     return selectedCharacters;
                 }
             }
         }
-        private BaseObject ChoosePoints(string title, Plant[] menuItems)
+        private T ChoosePoint<T>(string title, T[] menuItems)
         {
             Console.WriteLine(title);
             Console.WriteLine();
@@ -135,10 +138,14 @@ namespace Turnip
 
         public void Tell()
         {
-            plant = (Plant)ChoosePoints("Choose plant:", availablePlants);
+            plant = ChoosePoint<Plant>("Choose plant:", availablePlants);
             Console.Clear();
+            mainCharacter = (Human)ChoosePoint<Character>("Choose main character:", Array.FindAll(availableCharacters, c => c.canPlanting));
+            Console.Clear();
+
+            Console.WriteLine("You have chosen {0}", mainCharacter);
             Console.WriteLine("You have chosen {0}.", plant);
-            characters = (Character[])ChoosePoints("Choose characters. Chose 6 characters", availableCharacters);
+            characters = ChooseCharacters<Character>("Choose characters. Chose 5 characters", Array.FindAll(availableCharacters, c=> c.Name!=mainCharacter.Name));
             Console.Clear();
             WriteFairytaleToConsole();
 
@@ -147,86 +154,46 @@ namespace Turnip
 
         private void WriteFairytaleToConsole()
         {
-            int currentCharacter = 0;
-            Console.WriteLine("{0} planted a {1} and the {1} grew big, very big.", characters[currentCharacter], plant);
-            Console.WriteLine("The {0} began to pull the {1} out of the ground: he pulled and pulled, but could not pull it out.", characters[currentCharacter], plant);
+            activeCharacters++;
+            mainCharacter.ToPlant(plant);
+            plant.ToGrow();
+            string chainOfCharacters = mainCharacter.ToGrab(plant)+".";
+            mainCharacter.ToPull(plant);
+            CheckForSuccesfullPull();
+            activeCharacters++;
+            mainCharacter.ToCall(characters[0]);
+            chainOfCharacters = characters[0].ToGrab(mainCharacter) + ", " + chainOfCharacters ;
+            WriteChainOfCharacters(chainOfCharacters);
+            ToPullAllCharacters();
+            CheckForSuccesfullPull();
             for (int i = 0; i < characters.Length - 1; i++)
             {
-                Console.WriteLine("The {0} called the {1} for help.", characters[i], characters[i + 1]);
-                Console.WriteLine(writeChainOfCharacters(i));
+                activeCharacters++;
+                characters[i].ToCall(characters[i + 1]);
+                chainOfCharacters= characters[i+1].ToGrab(characters[i]) + ", " + chainOfCharacters;
+                WriteChainOfCharacters(chainOfCharacters);
+                ToPullAllCharacters();
+                CheckForSuccesfullPull();
             }
         }
 
-        private string writeChainOfCharacters(int i)
-        {
-            string result = "";
-            for (int j = i + 1; j > 0; j--)
+        private void ToPullAllCharacters() {
+            Console.Write("They pull and pull, ");
+        }
+
+        private void CheckForSuccesfullPull() {
+            if (activeCharacters < 6)
             {
-                result += "" + characters[j] + " for " + characters[j - 1] + ", ";
+                Console.WriteLine("but could not pull it out.");
             }
-            result += characters[0] + " for " + plant;
-            if (i < 4)
-            {
-                result += ": they pull and pull, but they can’t pull it out.";
-
-            }
-            else
-            {
-                result += ": they pull and pull - they pulled out " + plant + "!";
-            }
-            return result;
-        }
-
-        class BaseObject
-        {
-            public string Name { get; set; }
-            public BaseObject(string name)
-            {
-                Name = name;
-            }
-
-            public override string ToString()
-            {
-                return Name;
+            else {
+                Console.WriteLine("they pulled out {0}!", plant);
             }
         }
 
-        class Character : BaseObject
+        private void WriteChainOfCharacters(string chain)
         {
-            public Character(string name) : base(name)
-            { }
-        }
-
-        class Human : Character
-        {
-            public Human(string name) : base(name)
-            { }
-        }
-
-        class Animal : Character
-        {
-            public Animal(string name) : base(name)
-            { }
-        }
-
-        class Plant : BaseObject
-        {
-            public Plant(string name) : base(name)
-            { }
-        }
-
-        class Vegetable : Plant
-        {
-            public Vegetable(string name) : base(name)
-            {
-            }
-        }
-
-        class Fruit : Plant
-        {
-            public Fruit(string name) : base(name)
-            {
-            }
+            Console.WriteLine(chain);
         }
     }
 }

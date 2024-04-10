@@ -70,7 +70,7 @@ namespace Turnip
         }
 
 
-        private T[] ChooseCharacters<T>(string title, T[] menuItems)
+        private T[] ChoosePoints<T>(string title, T[] menuItems)
         {
             Console.WriteLine(title);
             Console.WriteLine();
@@ -145,7 +145,7 @@ namespace Turnip
 
             Console.WriteLine("You have chosen {0}", mainCharacter);
             Console.WriteLine("You have chosen {0}.", plant);
-            characters = ChooseCharacters<Character>("Choose characters. Chose 5 characters", Array.FindAll(availableCharacters, c=> c.Name!=mainCharacter.Name));
+            characters = ChoosePoints<Character>("Choose characters. Chose 5 characters", Array.FindAll(availableCharacters, c=> c.Name!=mainCharacter.Name));
             Console.Clear();
             WriteFairytaleToConsole();
 

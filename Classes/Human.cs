@@ -11,7 +11,6 @@ namespace Turnip.Classes
     {
         public Human(string name) : base(name)
         {
-            canPlanting = true;
         }
 
         public void ToPlant(Plant plant)

@@ -140,7 +140,7 @@ namespace Turnip
         {
             plant = ChoosePoint<Plant>("Choose plant:", availablePlants);
             Console.Clear();
-            mainCharacter = (Human)ChoosePoint<Character>("Choose main character:", Array.FindAll(availableCharacters, c => c.canPlanting));
+            mainCharacter = (Human)ChoosePoint<Character>("Choose main character:", Array.FindAll(availableCharacters, c => c.GetType() == typeof(Human)));
             Console.Clear();
 
             Console.WriteLine("You have chosen {0}", mainCharacter);

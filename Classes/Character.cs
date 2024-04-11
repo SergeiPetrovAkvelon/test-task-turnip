@@ -9,7 +9,6 @@ namespace Turnip.Classes
 {
     internal class Character : BaseObject, IToCall, IToPull, IToGrab
     {
-        public bool canPlanting;
         public BaseObject GrabedCharacter { get; set; }
         public Character(string name) : base(name)
         { }

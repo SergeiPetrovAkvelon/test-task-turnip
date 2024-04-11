@@ -10,7 +10,6 @@ namespace Turnip.Classes
     {
         public Animal(string name) : base(name)
         {
-            canPlanting = false;
         }
     }
 }

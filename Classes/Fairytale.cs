@@ -134,7 +134,8 @@ namespace Turnip.Classes
 
             Console.WriteLine("You have chosen {0}", mainCharacter);
             Console.WriteLine("You have chosen {0}.", plant);
-            characters = ChoosePoints<Character>("Choose characters. Chose 5 characters", Array.FindAll(availableCharacters, c => c.Name != mainCharacter.Name));
+            Array.Copy(ChoosePoints<Character>("Choose characters. Chose 5 characters", Array.FindAll(availableCharacters, c => c.Name != mainCharacter.Name)), 0, characters, 1, 5);
+            characters[0] = mainCharacter;
             Console.Clear();
             WriteFairytaleToConsole();
 
@@ -143,26 +144,19 @@ namespace Turnip.Classes
 
         private void WriteFairytaleToConsole()
         {
-            activeCharacters++;
-            mainCharacter.ToPlant(plant);
+            ((Human)characters[0]).ToPlant(plant);
             plant.ToGrow();
-            string chainOfCharacters = mainCharacter.ToGrab(plant) + ".";
-            mainCharacter.ToPull(plant);
-            CheckForSuccesfullPull();
-            activeCharacters++;
-            mainCharacter.ToCall(characters[0]);
-            chainOfCharacters = characters[0].ToGrab(mainCharacter) + ", " + chainOfCharacters;
-            WriteChainOfCharacters(chainOfCharacters);
-            ToPullAllCharacters();
-            CheckForSuccesfullPull();
+            string chainOfCharacters = characters[0].ToGrab(plant) + ".";
+            characters[0].ToPull(plant);
+            CheckForSuccesfullPull(0);
+
             for (int i = 0; i < characters.Length - 1; i++)
             {
-                activeCharacters++;
                 characters[i].ToCall(characters[i + 1]);
                 chainOfCharacters = characters[i + 1].ToGrab(characters[i]) + ", " + chainOfCharacters;
                 WriteChainOfCharacters(chainOfCharacters);
                 ToPullAllCharacters();
-                CheckForSuccesfullPull();
+                CheckForSuccesfullPull(i + 1);
             }
         }
 
@@ -171,9 +165,9 @@ namespace Turnip.Classes
             Console.Write("They pull and pull, ");
         }
 
-        private void CheckForSuccesfullPull()
+        private void CheckForSuccesfullPull(int i)
         {
-            if (activeCharacters < 6)
+            if (i < 5)
             {
                 Console.WriteLine("but could not pull it out.");
             }
